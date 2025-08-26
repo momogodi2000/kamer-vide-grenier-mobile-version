@@ -1,0 +1,173 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Generate new certificates and provisioning profiles"
+  lane :certificates do
+    match(type: "development")
+    match(type: "adhoc")
+    match(type: "appstore")
+  end
+
+  desc "Build app for development"
+  lane :build_debug do
+    certificates
+    gym(
+      scheme: "KamerVideGrenier",
+      configuration: "Debug",
+      export_method: "development"
+    )
+  end
+
+  desc "Build app for distribution"
+  lane :build_release do
+    certificates
+    increment_build_number(xcodeproj: "KamerVideGrenier.xcodeproj")
+    gym(
+      scheme: "KamerVideGrenier",
+      configuration: "Release",
+      export_method: "app-store"
+    )
+  end
+
+  desc "Run tests"
+  lane :test do
+    scan(scheme: "KamerVideGrenier")
+  end
+
+  desc "Deploy to TestFlight"
+  lane :deploy_testflight do
+    build_release
+    upload_to_testflight(
+      skip_waiting_for_build_processing: false,
+      skip_submission: true,
+      distribute_external: false,
+      notify_external_testers: false
+    )
+    
+    # Send success notification
+    slack(
+      message: "Successfully uploaded Kamer Vide Grenier iOS app to TestFlight! ✈️",
+      channel: "#releases",
+      success: true
+    ) if ENV["SLACK_URL"]
+  end
+
+  desc "Deploy to TestFlight for external testing"
+  lane :deploy_testflight_external do
+    build_release
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      skip_submission: false,
+      distribute_external: true,
+      notify_external_testers: true,
+      groups: ["Beta Testers"],
+      beta_app_review_info: {
+        contact_email: "support@kamer-vide-grenier.com",
+        contact_first_name: "Support",
+        contact_last_name: "Team",
+        contact_phone: "+237612345678",
+        demo_account_name: "demo@kamer-vide-grenier.com",
+        demo_account_password: "demo123",
+        notes: "This is a beta version of Kamer Vide Grenier marketplace app for Cameroon."
+      }
+    )
+  end
+
+  desc "Deploy to App Store"
+  lane :deploy_appstore do
+    build_release
+    deliver(
+      force: true,
+      submit_for_review: false,
+      automatic_release: false,
+      skip_metadata: false,
+      skip_screenshots: false,
+      precheck_include_in_app_purchases: false
+    )
+    
+    # Send success notification
+    slack(
+      message: "Successfully submitted Kamer Vide Grenier iOS app to App Store! 📱",
+      channel: "#releases",
+      success: true
+    ) if ENV["SLACK_URL"]
+  end
+
+  desc "Submit for App Store review"
+  lane :submit_review do
+    deliver(
+      submit_for_review: true,
+      automatic_release: false,
+      force: true,
+      submission_information: {
+        add_id_info_limits_tracking: true,
+        add_id_info_serves_ads: false,
+        add_id_info_tracks_action: true,
+        add_id_info_tracks_install: true,
+        add_id_info_uses_idfa: false,
+        content_rights_has_rights: true,
+        content_rights_contains_third_party_content: false,
+        export_compliance_platform: 'ios',
+        export_compliance_compliance_required: false,
+        export_compliance_encryption_updated: false,
+        export_compliance_app_type: nil,
+        export_compliance_uses_encryption: false,
+        export_compliance_is_exempt: false,
+        export_compliance_contains_third_party_cryptography: false,
+        export_compliance_contains_proprietary_cryptography: false,
+        export_compliance_available_on_french_store: false
+      }
+    )
+  end
+
+  desc "Full release process"
+  lane :release do
+    ensure_git_status_clean
+    
+    # Increment version
+    increment_version_number(bump_type: "patch")
+    
+    # Build and deploy
+    deploy_appstore
+    
+    # Commit version bump
+    git_add(path: ".")
+    git_commit(path: ".", message: "iOS version bump")
+    push_to_git_remote
+    
+    # Create git tag
+    version = get_version_number(xcodeproj: "KamerVideGrenier.xcodeproj")
+    add_git_tag(tag: "ios/v#{version}")
+    push_git_tags
+  end
+
+  desc "Setup development environment"
+  lane :setup do
+    certificates
+    cocoapods
+  end
+
+  # Error handling
+  error do |lane, exception|
+    slack(
+      message: "Failed to deploy Kamer Vide Grenier iOS app: #{exception.message}",
+      channel: "#releases",
+      success: false
+    ) if ENV["SLACK_URL"]
+  end
+end

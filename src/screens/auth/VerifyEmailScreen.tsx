@@ -1,0 +1,1 @@
+import React from 'react'; import { View, Text, StyleSheet } from 'react-native'; const VerifyEmailScreen: React.FC = () => { return ( <View style={styles.container}> <Text>VerifyEmailScreen - To be implemented</Text> </View> ); }; const styles = StyleSheet.create({ container: { flex: 1, justifyContent: 'center', alignItems: 'center', }, }); export default VerifyEmailScreen;
