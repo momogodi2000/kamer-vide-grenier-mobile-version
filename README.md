@@ -1,52 +1,336 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Kamer Vide Grenier Mobile App
 
-# Getting Started
+A comprehensive React Native marketplace application designed specifically for Cameroon, built with modern technologies and best practices.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## 📱 Overview
 
-## Step 1: Start Metro
+Kamer Vide Grenier is a feature-rich mobile marketplace application that connects buyers and sellers in Cameroon. The app supports multiple user roles (visitors, clients, sellers, delivery agents, and admins) with a complete e-commerce workflow including product listings, payments, delivery tracking, and real-time notifications.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## 🏗️ Architecture
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+### Technology Stack
 
-```sh
-# Using npm
-npm start
+- **Framework**: React Native 0.81.0
+- **Language**: TypeScript
+- **State Management**: Redux Toolkit
+- **Navigation**: React Navigation v7
+- **UI Components**: React Native Paper
+- **Networking**: Axios with interceptors
+- **Database**: SQLite (offline support)
+- **Authentication**: JWT with biometric support
+- **Real-time**: Socket.io
+- **Payments**: Multiple gateways (Stripe, Noupia, Campay)
+- **Image Handling**: Cloudinary integration
 
-# OR using Yarn
-yarn start
+### Key Features
+
+- 🔐 **Multi-role Authentication**: Support for 5 user roles
+- 💳 **Multiple Payment Methods**: Mobile money, bank transfers, cash on delivery
+- 🚚 **Delivery Tracking**: Real-time delivery status updates
+- 📱 **Offline Support**: SQLite database for offline functionality
+- 🔒 **Biometric Authentication**: Fingerprint/Face ID support
+- 🌍 **Multi-language**: French and English support
+- 🔔 **Push Notifications**: Real-time notifications
+- 📊 **Analytics Dashboard**: Comprehensive analytics for admins
+- 🛒 **Shopping Cart**: Persistent cart with local storage
+- ⭐ **Reviews & Ratings**: Product and seller reviews
+- 💬 **Real-time Chat**: In-app messaging system
+
+## 📁 Project Structure
+
+```
+videgrinier-mobile/
+├── android/                    # Android native code
+├── ios/                       # iOS native code
+├── src/
+│   ├── assets/                # Static assets (images, fonts, etc.)
+│   ├── components/            # Reusable UI components
+│   │   ├── analytics/         # Analytics and charts components
+│   │   ├── auth/             # Authentication components
+│   │   ├── chat/             # Chat/messaging components
+│   │   ├── common/           # Common/shared components
+│   │   ├── delivery/         # Delivery tracking components
+│   │   ├── products/         # Product-related components
+│   │   ├── ui/               # Base UI components
+│   │   └── specific/         # Role-specific components
+│   ├── hooks/                # Custom React hooks
+│   ├── models/               # TypeScript interfaces and types
+│   ├── navigation/           # Navigation configuration
+│   │   ├── tabs/             # Tab navigators
+│   │   └── types.ts          # Navigation type definitions
+│   ├── screens/              # Screen components by role
+│   │   ├── admin/            # Admin dashboard screens
+│   │   ├── auth/             # Authentication screens
+│   │   ├── client/           # Client/user screens
+│   │   ├── delivery/         # Delivery agent screens
+│   │   ├── home/             # Home screen
+│   │   ├── orders/           # Order management screens
+│   │   ├── profile/          # Profile management screens
+│   │   └── seller/           # Seller screens
+│   ├── services/             # Business logic and API services
+│   ├── store/                # Redux store configuration
+│   │   └── slices/           # Redux slices
+│   ├── theme/                # Theme configuration
+│   ├── types/                # Additional type definitions
+│   ├── utils/                # Utility functions
+│   └── viewmodels/           # View models (MVVM pattern)
+├── __tests__/                # Test files
+└── docs/                     # Documentation
 ```
 
-## Step 2: Build and run your app
+## 🚀 Getting Started
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+### Prerequisites
 
-### Android
+- Node.js >= 18.0.0
+- npm or yarn
+- React Native CLI
+- Android Studio (for Android development)
+- Xcode (for iOS development)
 
-```sh
-# Using npm
-npm run android
+### Installation
 
-# OR using Yarn
-yarn android
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd videgrinier-mobile
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Install iOS dependencies** (macOS only)
+   ```bash
+   cd ios && pod install && cd ..
+   ```
+
+4. **Environment Setup**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+5. **Start Metro bundler**
+   ```bash
+   npm start
+   ```
+
+6. **Run on Android**
+   ```bash
+   npm run android
+   ```
+
+7. **Run on iOS** (macOS only)
+   ```bash
+   npm run ios
+   ```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env` file with the following variables:
+
+```env
+API_BASE_URL=https://api.kamervidegrenier.com
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+NOUPIA_API_KEY=your_noupia_key
+CAMPAY_API_KEY=your_campay_key
+SOCKET_URL=https://socket.kamervidegrenier.com
 ```
 
-### iOS
+### Android Configuration
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+1. **SDK Setup**: Ensure Android SDK is properly configured
+2. **Emulator**: Create an Android Virtual Device (AVD)
+3. **ADB**: Ensure Android Debug Bridge is in PATH
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+### iOS Configuration
 
-```sh
-bundle install
+1. **Xcode**: Install latest Xcode version
+2. **Cocoapods**: Install CocoaPods dependencies
+3. **Simulator**: Configure iOS Simulator
+
+## 📱 User Roles & Features
+
+### 1. Visitor (Anonymous User)
+- Browse products
+- View product details
+- Search products
+- View seller profiles
+- Basic app functionality
+
+### 2. Client (Registered User)
+- All visitor features
+- Create account
+- Add to cart/wishlist
+- Place orders
+- Make payments
+- Rate and review products
+- Real-time chat with sellers
+- Order tracking
+- Wallet management
+
+### 3. Seller
+- All client features
+- Create and manage products
+- Manage inventory
+- View sales analytics
+- Respond to customer inquiries
+- Manage orders
+- Receive payments
+
+### 4. Delivery Agent
+- View assigned deliveries
+- Update delivery status
+- Real-time GPS tracking
+- Customer communication
+- Delivery history
+- Earnings tracking
+
+### 5. Admin
+- Complete system access
+- User management
+- Product moderation
+- Order management
+- Analytics dashboard
+- System configuration
+- Payment gateway management
+
+## 🔒 Security Features
+
+- **JWT Authentication**: Secure token-based authentication
+- **Biometric Authentication**: Fingerprint/Face ID support
+- **Encrypted Storage**: Sensitive data encryption
+- **Certificate Pinning**: API security
+- **Offline Data Security**: Encrypted local database
+- **Session Management**: Automatic session handling
+
+## 💳 Payment Integration
+
+### Supported Payment Methods
+- **Mobile Money**: MTN Mobile Money, Orange Money
+- **Bank Transfer**: Direct bank transfers
+- **Cash on Delivery**: Pay upon delivery
+- **Credit/Debit Cards**: Stripe integration
+- **Cryptocurrency**: Future implementation
+
+### Payment Flow
+1. Order creation
+2. Payment method selection
+3. Payment processing
+4. Confirmation and receipt
+5. Order status updates
+
+## 🚚 Delivery System
+
+### Features
+- **Real-time Tracking**: GPS-based delivery tracking
+- **Status Updates**: Automated status notifications
+- **Customer Communication**: In-app messaging
+- **Proof of Delivery**: Photo verification
+- **Delivery Analytics**: Performance metrics
+
+### Delivery States
+- Assigned
+- Picked up
+- In transit
+- Delivered
+- Cancelled/Failed
+
+## 📊 Analytics & Reporting
+
+### Admin Dashboard
+- Sales analytics
+- User statistics
+- Product performance
+- Revenue reports
+- Delivery metrics
+- Customer insights
+
+### Seller Dashboard
+- Sales performance
+- Product analytics
+- Customer reviews
+- Inventory reports
+- Earnings tracking
+
+## 🧪 Testing
+
+### Test Structure
+```
+__tests__/
+├── components/          # Component tests
+├── screens/            # Screen tests
+├── services/           # Service tests
+├── hooks/              # Hook tests
+└── utils/              # Utility tests
 ```
 
-Then, and every time you update your native dependencies, run:
+### Running Tests
+```bash
+# Run all tests
+npm test
 
-```sh
-bundle exec pod install
+# Run tests in watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
 ```
+
+## 🚀 Deployment
+
+### Android Build
+```bash
+# Generate release APK
+cd android && ./gradlew assembleRelease
+
+# Generate AAB (Android App Bundle)
+cd android && ./gradlew bundleRelease
+```
+
+### iOS Build
+```bash
+# Archive for App Store
+cd ios && xcodebuild archive -scheme KamerVideGrenierApp
+```
+
+## 📚 Documentation
+
+- [API Documentation](./docs/api.md)
+- [Component Library](./docs/components.md)
+- [Navigation Guide](./docs/navigation.md)
+- [State Management](./docs/redux.md)
+- [Testing Guide](./docs/testing.md)
+- [Deployment Guide](./docs/deployment.md)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new features
+5. Ensure all tests pass
+6. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Support
+
+For support and questions:
+- Email: support@kamervidegrenier.com
+- Documentation: [docs.kamervidegrenier.com](https://docs.kamervidegrenier.com)
+- Issues: [GitHub Issues](https://github.com/kamer-vide-grenier/mobile/issues)
+
+---
+
+**Built with ❤️ for Cameroon** 🇨🇲
 
 For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
 
