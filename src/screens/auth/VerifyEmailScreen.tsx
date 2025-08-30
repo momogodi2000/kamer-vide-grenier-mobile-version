@@ -43,9 +43,7 @@ const VerifyEmailScreen: React.FC = () => {
       
       // Redirect to login after 3 seconds
       setTimeout(() => {
-        navigation.navigate('Login' as never, {
-          message: 'Email vérifié avec succès! Vous pouvez maintenant vous connecter.'
-        } as never);
+        navigation.navigate('Login' as never);
       }, 3000);
     } catch (err: any) {
       setStatus('error');
@@ -58,7 +56,7 @@ const VerifyEmailScreen: React.FC = () => {
     
     setIsResending(true);
     try {
-      await authService.resendVerification(email);
+      await authService.resendVerificationEmail();
       setStatus('resent');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Erreur lors de l\'envoi de l\'email');

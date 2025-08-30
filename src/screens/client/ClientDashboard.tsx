@@ -65,21 +65,21 @@ const ClientDashboard: React.FC = () => {
       const [wallet, orders, products] = await Promise.all([
         walletService.getWallet(),
         orderService.getMyOrders(),
-        productService.getRecommendations()
+        productService.getFeaturedProducts()
       ]);
       
       setClientStats({
-        totalOrders: orders.length,
-        completedOrders: orders.filter((o: any) => o.status === 'completed').length,
-        pendingOrders: orders.filter((o: any) => o.status === 'pending').length,
-        totalSpent: orders.reduce((sum: number, order: any) => sum + order.total, 0),
+        totalOrders: orders.data?.length || 0,
+        completedOrders: orders.data?.filter((o: any) => o.status === 'completed').length || 0,
+        pendingOrders: orders.data?.filter((o: any) => o.status === 'pending').length || 0,
+        totalSpent: orders.data?.reduce((sum: number, order: any) => sum + order.total, 0) || 0,
         loyaltyPoints: user?.loyalty_points || 0,
         wishlistCount: 12, // Replace with real data
         savedCards: 2, // Replace with real data  
         activeSubscriptions: 1, // Replace with real data
-        walletBalance: wallet.balance,
-        recentOrders: orders.slice(0, 3),
-        recommendations: products.slice(0, 3),
+        walletBalance: wallet.data?.balance || 0,
+        recentOrders: orders.data?.slice(0, 3) || [],
+        recommendations: products.data?.slice(0, 3) || [],
         favoriteCategories: ['Électronique', 'Mode', 'Maison']
       });
     } catch (error) {

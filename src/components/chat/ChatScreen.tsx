@@ -12,6 +12,7 @@ import {
   StatusBar
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -80,9 +81,10 @@ export default function ChatScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   const flatListRef = useRef<FlatList>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<number | null>(null);
 
   const scrollToBottom = useCallback(() => {
     if (messages.length > 0) {
@@ -90,8 +92,21 @@ export default function ChatScreen() {
     }
   }, [messages.length]);
 
-  // Load messages (online or cached)
-  const loadMessages = useCallback(async () => {
+  // Load current user
+  useEffect(() => {
+    const loadCurrentUser = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('user');
+        if (userData) {
+          setCurrentUser(JSON.parse(userData));
+        }
+      } catch (error) {
+        console.log('Failed to load current user:', error);
+      }
+    };
+    
+    loadCurrentUser();
+  }, []);
     try {
       setLoading(true);
       
@@ -124,6 +139,22 @@ export default function ChatScreen() {
     }
   }, [chatId, isOffline, getCachedMessages]);
 
+  // Load current user
+  useEffect(() => {
+    const loadCurrentUser = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('user');
+        if (userData) {
+          setCurrentUser(JSON.parse(userData));
+        }
+      } catch (error) {
+        console.log('Failed to load current user:', error);
+      }
+    };
+    
+    loadCurrentUser();
+  }, []);
+
   // Join chat and set up event listeners
   useEffect(() => {
     if (chatId) {
@@ -131,7 +162,7 @@ export default function ChatScreen() {
       loadMessages();
 
       // Socket event listeners
-      const handleNewMessage = (data: { message: Message; chatId: string }) => {
+      const handleNewMessage = async (data: { message: Message; chatId: string }) => {
         if (data.chatId === chatId) {
           setMessages(prev => {
             // Check if message already exists (avoid duplicates)
@@ -193,18 +224,17 @@ export default function ChatScreen() {
     setNewMessage('');
     setIsSending(true);
 
-    const currentUser = JSON.parse(await AsyncStorage.getItem('user') || '{}');
     const tempMessage: Message = {
       id: `temp_${Date.now()}`,
       chatId,
-      senderId: currentUser.id,
+      senderId: currentUser?.id || '',
       message: messageText,
       type: 'text',
       sentAt: new Date().toISOString(),
       Sender: {
-        id: currentUser.id,
-        firstName: currentUser.firstName,
-        lastName: currentUser.lastName
+        id: currentUser?.id || '',
+        firstName: currentUser?.firstName || '',
+        lastName: currentUser?.lastName || ''
       },
       _isTemp: true,
       _status: 'pending'
@@ -309,7 +339,7 @@ export default function ChatScreen() {
   };
 
   const renderMessage = ({ item: message }: { item: Message }) => {
-    const isCurrentUser = message.senderId === JSON.parse(AsyncStorage.getItem('user') || '{}').id;
+    const isCurrentUser = currentUser && message.senderId === currentUser.id;
     
     return (
       <View
@@ -345,8 +375,7 @@ export default function ChatScreen() {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'flex-end',
-              marginTop: 4,
-              space: 4
+              marginTop: 4
             }}
           >
             <Text
@@ -386,9 +415,9 @@ export default function ChatScreen() {
             borderBottomLeftRadius: 4
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', space: 2 }}>
-            <Text style={{ fontSize: 16, color: '#6b7280' }}>•</Text>
-            <Text style={{ fontSize: 16, color: '#6b7280' }}>•</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ fontSize: 16, color: '#6b7280', marginRight: 2 }}>•</Text>
+            <Text style={{ fontSize: 16, color: '#6b7280', marginRight: 2 }}>•</Text>
             <Text style={{ fontSize: 16, color: '#6b7280' }}>•</Text>
           </View>
         </View>
@@ -481,12 +510,13 @@ export default function ChatScreen() {
           </View>
         </View>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', space: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <View
             style={{
               width: 8,
               height: 8,
               borderRadius: 4,
+              marginRight: 8,
               backgroundColor: getConnectionStatusColor()
             }}
           />

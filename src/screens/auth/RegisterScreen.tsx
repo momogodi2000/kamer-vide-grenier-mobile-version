@@ -156,7 +156,7 @@ const RegisterScreen: React.FC = () => {
     if (!validateStep3()) return;
     
     try {
-      const result = await dispatch(registerUser(formData)).unwrap();
+      const result = await dispatch(register(formData)).unwrap();
       
       if (result.success) {
         Alert.alert(

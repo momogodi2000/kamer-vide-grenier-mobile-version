@@ -12,6 +12,7 @@ import {
   Platform,
   Image,
 } from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -58,7 +59,7 @@ const LoginScreen: React.FC = () => {
   const loadSavedCredentials = async () => {
     try {
       // Load saved email if remember me was enabled
-      const savedEmail = await securityService.getSecureItem('saved_email');
+      const savedEmail = await EncryptedStorage.getItem('saved_email');
       if (savedEmail) {
         setFormData(prev => ({ ...prev, email: savedEmail }));
         setRememberMe(true);
@@ -100,14 +101,14 @@ const LoginScreen: React.FC = () => {
     if (!validateForm()) return;
     
     try {
-      const result = await dispatch(loginUser(formData)).unwrap();
+      const result = await dispatch(login(formData)).unwrap();
       
       if (result.success) {
         // Save email if remember me is checked
         if (rememberMe) {
-          await securityService.setSecureItem('saved_email', formData.email);
+          await EncryptedStorage.setItem('saved_email', formData.email);
         } else {
-          await securityService.removeSecureItem('saved_email');
+          await EncryptedStorage.removeItem('saved_email');
         }
         
         Alert.alert('Succès', 'Connexion réussie!', [
@@ -127,14 +128,14 @@ const LoginScreen: React.FC = () => {
     
     try {
       const success = await biometricService.authenticateWithBiometrics(
-        'Authentifiez-vous pour vous connecter',
-        'Utilisez votre empreinte digitale ou Face ID'
+        'Authentifiez-vous pour vous connecter'
       );
       
       if (success) {
-        const savedCredentials = await biometricService.getBiometricCredentials();
-        if (savedCredentials) {
-          setFormData(savedCredentials);
+        const savedEmail = await EncryptedStorage.getItem('biometric_email');
+        const savedPassword = await EncryptedStorage.getItem('biometric_password');
+        if (savedEmail && savedPassword) {
+          setFormData({ email: savedEmail, password: savedPassword });
           await handleLogin();
         } else {
           Alert.alert('Erreur', 'Aucune donnée d\'identification biométrique trouvée');

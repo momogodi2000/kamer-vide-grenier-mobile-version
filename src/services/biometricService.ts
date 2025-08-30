@@ -60,12 +60,13 @@ export class BiometricService {
    */
   async createBiometricKeys(): Promise<{ success: boolean; publicKey?: string; error?: string }> {
     try {
-      const { success, publicKey } = await this.rnBiometrics.createKeys();
-      
-      if (success && publicKey) {
+      const result = await this.rnBiometrics.createKeys();
+      const success = result && typeof result === 'object' && 'publicKey' in result;
+
+      if (success && result.publicKey) {
         // Store the public key securely
-        await EncryptedStorage.setItem('biometric_public_key', publicKey);
-        return { success: true, publicKey };
+        await EncryptedStorage.setItem('biometric_public_key', result.publicKey);
+        return { success: true, publicKey: result.publicKey };
       }
       
       return { success: false, error: 'Failed to create biometric keys' };
@@ -79,7 +80,8 @@ export class BiometricService {
    */
   async deleteBiometricKeys(): Promise<{ success: boolean; error?: string }> {
     try {
-      const { success } = await this.rnBiometrics.deleteKeys();
+      const result = await this.rnBiometrics.deleteKeys();
+      const success = result && typeof result === 'object' && 'keysDeleted' in result ? result.keysDeleted : false;
       
       if (success) {
         // Remove stored public key
@@ -276,7 +278,7 @@ export class BiometricService {
   /**
    * Verify biometric signature (for backend verification)
    */
-  async verifyBiometricSignature(signature: string, payload: string): Promise<boolean> {
+  async verifyBiometricSignature(signature: string, _payload: string): Promise<boolean> {
     try {
       const publicKey = await EncryptedStorage.getItem('biometric_public_key');
       

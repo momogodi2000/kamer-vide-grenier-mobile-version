@@ -57,7 +57,7 @@ const VerifyPhoneScreen: React.FC = () => {
     setError('');
     
     try {
-      await authService.verifyPhone(phone, code);
+      await authService.verifyPhone(code);
       setStatus('success');
       
       // Redirect to dashboard after 2 seconds
@@ -75,7 +75,8 @@ const VerifyPhoneScreen: React.FC = () => {
     
     setIsResending(true);
     try {
-      await authService.resendPhoneVerification(phone);
+      // TODO: Implement resend phone verification
+      Alert.alert('Fonctionnalité non disponible', 'La fonctionnalité de renvoi de code n\'est pas encore disponible');
       setTimeLeft(60);
       setError('');
       Alert.alert('Code envoyé', 'Un nouveau code de vérification a été envoyé');

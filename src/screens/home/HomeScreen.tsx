@@ -277,7 +277,7 @@ Actions en attente de synchronisation: ${dashboardStats.pendingSyncActions}
       <View style={styles.actionsRow}>
         <TouchableOpacity 
           style={styles.actionCard}
-          onPress={() => navigation.navigate('Search')}
+          onPress={() => navigation.navigate('SearchTab' as never)}
         >
           <Icon name="search" size={32} color="#2E7D32" />
           <Text style={styles.actionLabel}>Rechercher</Text>
@@ -285,7 +285,7 @@ Actions en attente de synchronisation: ${dashboardStats.pendingSyncActions}
         
         <TouchableOpacity 
           style={styles.actionCard}
-          onPress={() => navigation.navigate('SellTab')}
+          onPress={() => navigation.navigate('SellTab' as never)}
         >
           <Icon name="add-circle" size={32} color="#1976D2" />
           <Text style={styles.actionLabel}>Vendre</Text>
@@ -293,7 +293,7 @@ Actions en attente de synchronisation: ${dashboardStats.pendingSyncActions}
         
         <TouchableOpacity 
           style={styles.actionCard}
-          onPress={() => navigation.navigate('OrdersTab')}
+          onPress={() => navigation.navigate('OrdersTab' as never)}
         >
           <Icon name="receipt" size={32} color="#F57C00" />
           <Text style={styles.actionLabel}>Commandes</Text>
