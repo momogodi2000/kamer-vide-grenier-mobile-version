@@ -98,7 +98,7 @@ export class AuthService {
       }
 
       const response = await apiClient.post<any>('/auth/refresh', {
-        refreshToken: refreshToken
+        refreshToken: refreshToken,
       });
 
       if (response.success && response.data?.tokens) {
@@ -106,7 +106,7 @@ export class AuthService {
           success: true,
           token: response.data.tokens.accessToken,
           refresh_token: response.data.tokens.refreshToken,
-          user: this.currentUser!
+          user: this.currentUser!,
         };
         await this.storeAuthData(loginResponse);
         return true;
@@ -164,7 +164,7 @@ export class AuthService {
     try {
       return await apiClient.post<ApiResponse>('/auth/change-password', {
         current_password: currentPassword,
-        new_password: newPassword
+        new_password: newPassword,
       });
     } catch (error) {
       throw this.handleError(error);
@@ -183,7 +183,7 @@ export class AuthService {
     try {
       return await apiClient.post<ApiResponse>('/auth/reset-password', {
         token,
-        password
+        password,
       });
     } catch (error) {
       throw this.handleError(error);
@@ -251,7 +251,7 @@ export class AuthService {
     await Promise.all([
       apiClient.setAuthToken(data.token),
       AsyncStorage.setItem('refresh_token', data.refresh_token),
-      AsyncStorage.setItem('user_data', JSON.stringify(data.user))
+      AsyncStorage.setItem('user_data', JSON.stringify(data.user)),
     ]);
   }
 
@@ -272,4 +272,5 @@ export class AuthService {
   }
 }
 
-export const authService = AuthService.getInstance();
+export const authService = AuthService.getInstance(); 
+ 
