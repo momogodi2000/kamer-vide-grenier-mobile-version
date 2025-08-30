@@ -18,7 +18,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { AuthStackParamList } from '../../navigation/types';
 import { RootState, AppDispatch } from '../../store';
-import { loginUser } from '../../store/slices/authSlice';
+import { login } from '../../store/slices/authSlice';
 import { biometricService, securityService } from '../../services';
 import { LoginRequest } from '../../models';
 
@@ -46,7 +46,7 @@ const LoginScreen: React.FC = () => {
   
   const checkBiometricAvailability = async () => {
     try {
-      const available = await biometricService.isBiometricAvailable();
+      const available = await biometricService.isBiometricEnabled();
       const enabled = await biometricService.isBiometricEnabled();
       setBiometricAvailable(available);
       setBiometricEnabled(enabled);
@@ -111,7 +111,7 @@ const LoginScreen: React.FC = () => {
         }
         
         Alert.alert('Succès', 'Connexion réussie!', [
-          { text: 'OK', onPress: () => navigation.navigate('Main') }
+          { text: 'OK', onPress: () => navigation.navigate('MainStack' as never) },
         ]);
       }
     } catch (error: any) {

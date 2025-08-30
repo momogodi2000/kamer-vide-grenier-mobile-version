@@ -193,7 +193,7 @@ Actions en attente de synchronisation: ${dashboardStats.pendingSyncActions}
         
         Alert.alert('État de sécurité', message, [
           { text: 'OK' },
-          { text: 'Paramètres', onPress: () => navigation.navigate('Profile') }
+          { text: 'Paramètres', onPress: () => navigation.navigate('ProfileTab' as never) }
         ]);
       }
     } catch (error) {

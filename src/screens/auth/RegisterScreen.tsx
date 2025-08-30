@@ -18,7 +18,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { AuthStackParamList } from '../../navigation/types';
 import { RootState, AppDispatch } from '../../store';
-import { registerUser } from '../../store/slices/authSlice';
+import { register } from '../../store/slices/authSlice';
 import { securityService } from '../../services';
 import { CreateUserRequest, Language, Region } from '../../models';
 
