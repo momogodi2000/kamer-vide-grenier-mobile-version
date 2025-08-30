@@ -15,22 +15,39 @@ export type {
   MobileMoneyProvider,
   PrivacySettings,
   SocialMedia,
-  EmergencyContact
+  EmergencyContact,
 } from './User';
 
 // Product types and interfaces
-export type { 
-  Product, 
-  ProductStatus, 
+export type {
+  Product,
+  ProductStatus,
   ProductCondition,
   CreateProductRequest,
   ProductSearchFilters,
   ProductSearchResponse,
-  DeliveryOptions
+  DeliveryOptions,
 } from './Product';
 
-// Order types and interfaces  
-export type { Order, OrderStatus, PaymentStatus, DeliveryMethod } from './Order';
+// Order types and interfaces
+export type {
+  Order,
+  OrderStatus,
+  PaymentStatus,
+  DeliveryMethod,
+  CreateOrderRequest,
+  UpdateOrderStatusRequest,
+  OrderSearchFilters,
+  OrderSearchResponse,
+} from './Order';
+
+// Payment types and interfaces
+export type {
+  Payment,
+  PaymentProvider,
+  CreatePaymentRequest,
+  PaymentWebhookData,
+} from './Payment';
 
 export interface ApiResponse<T = any> {
   success: boolean;

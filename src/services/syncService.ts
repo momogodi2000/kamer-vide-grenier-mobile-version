@@ -34,7 +34,7 @@ export class SyncService {
   };
   
   private syncListeners: ((status: SyncStatus) => void)[] = [];
-  private backgroundSyncInterval: NodeJS.Timeout | null = null;
+  private backgroundSyncInterval: ReturnType<typeof setInterval> | null = null;
   private isInitialized = false;
 
   private constructor() {}
@@ -50,7 +50,9 @@ export class SyncService {
    * Initialize sync service with network monitoring
    */
   async initialize(): Promise<void> {
-    if (this.isInitialized) return;
+    if (this.isInitialized) {
+      return;
+    }
 
     try {
       // Initialize offline database
@@ -59,7 +61,7 @@ export class SyncService {
       // Monitor network connectivity
       NetInfo.addEventListener((state) => {
         const wasOnline = this.syncStatus.isOnline;
-        this.syncStatus.isOnline = state.isConnected && state.isInternetReachable;
+        this.syncStatus.isOnline = !!(state.isConnected && state.isInternetReachable);
 
         if (!wasOnline && this.syncStatus.isOnline) {
           // Just came back online, trigger sync
@@ -72,7 +74,7 @@ export class SyncService {
 
       // Get initial network status
       const networkState = await NetInfo.fetch();
-      this.syncStatus.isOnline = networkState.isConnected && networkState.isInternetReachable;
+      this.syncStatus.isOnline = !!(networkState.isConnected && networkState.isInternetReachable);
 
       // Update pending actions count
       await this.updatePendingActionsCount();
@@ -219,7 +221,7 @@ export class SyncService {
             offlineDatabase.markActionAsSynced(action.id);
           } else {
             result.failedActions++;
-            const error = batchResult.status === 'rejected' 
+            const error = batchResult.status === 'rejected'
               ? batchResult.reason?.message || 'Unknown error'
               : batchResult.value?.error || 'Sync failed';
             

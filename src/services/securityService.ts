@@ -171,10 +171,12 @@ export class SecurityService {
     // This is a basic implementation - in production, you'd use more sophisticated methods
     // like checking for root management apps, su binaries, etc.
     try {
-      if (Platform.OS !== 'android') return false;
+      if (Platform.OS !== 'android') {
+        return false;
+      }
 
       // Check for debug mode (not foolproof but an indicator)
-      const isDebuggable = await DeviceInfo.isEmulator(); // This also checks debug mode
+      await DeviceInfo.isEmulator(); // This also checks debug mode
       
       // In a real implementation, you'd check for:
       // - Root management apps (SuperSU, Magisk, etc.)
@@ -319,7 +321,7 @@ export class SecurityService {
             const biometricResult = await biometricService.authenticateWithBiometrics(
               'Déverrouillez l\'application avec votre empreinte digitale ou Face ID'
             );
-            authResult = { success: biometricResult.success, error: biometricResult.error };
+            authResult = { success: biometricResult.success, error: biometricResult.error || 'Biometric authentication failed' };
           } else {
             authResult = { success: false, error: 'Biometric authentication not enabled' };
           }

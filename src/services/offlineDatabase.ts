@@ -38,7 +38,9 @@ export class OfflineDatabase {
    * Initialize the SQLite database
    */
   async initialize(): Promise<void> {
-    if (this.isInitialized) return;
+    if (this.isInitialized) {
+      return;
+    }
 
     try {
       this.db = SQLite.openDatabase('kamer_offline.db', '1.0', 'Kamer Vide Grenier Offline DB', 200000);
@@ -172,7 +174,7 @@ export class OfflineDatabase {
         id TEXT PRIMARY KEY,
         product_id TEXT NOT NULL,
         viewed_at INTEGER NOT NULL
-      )`
+      )`,
     ];
 
     for (const query of queries) {
@@ -190,7 +192,7 @@ export class OfflineDatabase {
       'CREATE INDEX IF NOT EXISTS idx_cached_orders_seller ON cached_orders(seller_id)',
       'CREATE INDEX IF NOT EXISTS idx_cart_items_product ON cart_items(product_id)',
       'CREATE INDEX IF NOT EXISTS idx_search_history_timestamp ON search_history(timestamp)',
-      'CREATE INDEX IF NOT EXISTS idx_recently_viewed_timestamp ON recently_viewed(viewed_at)'
+      'CREATE INDEX IF NOT EXISTS idx_recently_viewed_timestamp ON recently_viewed(viewed_at)',
     ];
 
     for (const indexQuery of indexes) {
@@ -581,7 +583,9 @@ export class OfflineDatabase {
    * Mark analytics events as synced
    */
   async markAnalyticsEventsSynced(eventIds: string[]): Promise<void> {
-    if (eventIds.length === 0) return;
+    if (eventIds.length === 0) {
+      return;
+    }
 
     const placeholders = eventIds.map(() => '?').join(',');
     await this.executeQuery(
@@ -736,6 +740,33 @@ export class OfflineDatabase {
     }
 
     return stats;
+  }
+
+  /**
+   * Store secure data (simple key-value storage)
+   */
+  async storeSecureData(key: string, value: string): Promise<void> {
+    await this.executeQuery(
+      `INSERT OR REPLACE INTO app_analytics (id, event_type, event_data, timestamp, synced)
+       VALUES (?, 'secure_data', ?, ?, 1)`,
+      [key, value, Date.now()]
+    );
+  }
+
+  /**
+   * Get secure data by key
+   */
+  async getSecureData(key: string): Promise<string | null> {
+    const result = await this.executeQuery(
+      'SELECT event_data FROM app_analytics WHERE id = ? AND event_type = \'secure_data\'',
+      [key]
+    );
+
+    if (result.rows.length > 0) {
+      return result.rows.item(0).event_data;
+    }
+
+    return null;
   }
 
   /**

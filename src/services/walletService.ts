@@ -4,8 +4,8 @@ import {
   WalletTransaction,
   Withdrawal,
   CreateWithdrawalRequest,
-  ApiResponse
-} from '../models';
+  ApiResponse,
+} from '../types/api';
 
 export class WalletService {
   async getWallet(): Promise<ApiResponse<Wallet>> {
@@ -100,7 +100,7 @@ export class WalletService {
       }>>('/wallet/add-funds', {
         amount,
         payment_method: paymentMethod,
-        description
+        description,
       });
     } catch (error) {
       throw this.handleError(error);
@@ -112,7 +112,7 @@ export class WalletService {
       return await apiClient.post<ApiResponse<WalletTransaction>>('/wallet/transfer', {
         recipient_id: recipientId,
         amount,
-        description
+        description,
       });
     } catch (error) {
       throw this.handleError(error);
@@ -189,7 +189,7 @@ export class WalletService {
         remaining_points: number;
       }>>('/wallet/loyalty/redeem', {
         points,
-        reward_type: rewardType
+        reward_type: rewardType,
       });
     } catch (error) {
       throw this.handleError(error);

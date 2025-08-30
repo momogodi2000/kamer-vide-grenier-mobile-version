@@ -1,7 +1,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
-import { format, parseISO, isValid } from 'date-fns';
-import { fr } from 'date-fns/locale';
+
+// Simple date utilities to replace date-fns
+const isValid = (date: any): boolean => {
+  return date instanceof Date && !isNaN(date.getTime());
+};
+
+const parseISO = (dateString: string): Date => {
+  return new Date(dateString);
+};
+
+const format = (date: Date, _formatStr: string): string => {
+  // Simple date formatting - you might want to use a more robust solution
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
 import {
   API_BASE_URL,
   API_TIMEOUT,
@@ -54,8 +69,10 @@ export const STORAGE_KEYS = {
 export const formatDate = (date: string | Date, formatStr: string = 'dd/MM/yyyy'): string => {
   try {
     const dateObj = typeof date === 'string' ? parseISO(date) : date;
-    if (!isValid(dateObj)) return 'Date invalide';
-    return format(dateObj, formatStr, { locale: fr });
+    if (!isValid(dateObj)) {
+      return 'Date invalide';
+    }
+    return format(dateObj, formatStr);
   } catch (error) {
     console.error('Error formatting date:', error);
     return 'Date invalide';
