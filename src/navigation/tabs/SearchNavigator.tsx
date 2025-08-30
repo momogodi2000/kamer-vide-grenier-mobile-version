@@ -3,9 +3,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SearchStackParamList } from '../types';
 
 // Placeholder components
-const SearchScreen = () => <></>;
-const SearchResultsScreen = () => <></>;
-const ProductFilterScreen = () => <></>;
+// const ProductFilterScreen = () => <></>;
+
+// Actual components
+import SearchScreen from '../../screens/client/SearchScreen';
+import SearchResultsScreen from '../../screens/client/SearchResultsScreen';
+import ProductFilterScreen from '../../screens/client/ProductFilterScreen';
 
 const SearchStack = createStackNavigator<SearchStackParamList>();
 

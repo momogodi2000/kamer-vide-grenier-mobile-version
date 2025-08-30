@@ -9,6 +9,7 @@ export type AuthStackParamList = {
   ResetPassword: { token: string };
   VerifyEmail: { email: string };
   VerifyPhone: { phone: string };
+  KYC: undefined;
 };
 
 // Main Tab Navigator
@@ -46,7 +47,8 @@ export type SearchStackParamList = {
 export type SellStackParamList = {
   MyProducts: undefined;
   CreateProduct: undefined;
-  EditProduct: { productId: string };
+  EditProduct: { product: any };
+  ProductDetails: { productId: string };
   ProductPreview: { productData: any };
   ImageUpload: { productId?: string };
   CategorySelector: { onSelect: (category: any) => void };
@@ -67,6 +69,7 @@ export type OrdersStackParamList = {
 // Profile Stack
 export type ProfileStackParamList = {
   Profile: undefined;
+  Wallet: undefined;
   EditProfile: undefined;
   Settings: undefined;
   Notifications: undefined;

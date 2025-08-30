@@ -8,6 +8,8 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   isInitialized: boolean;
+  kycStatus: string | null;
+  kycDocuments: any[];
 }
 
 const initialState: AuthState = {
@@ -16,6 +18,8 @@ const initialState: AuthState = {
   isLoading: false,
   error: null,
   isInitialized: false,
+  kycStatus: null,
+  kycDocuments: [],
 };
 
 // Async thunks
@@ -25,9 +29,9 @@ export const login = createAsyncThunk(
     try {
       const response = await authService.login(credentials);
       if (response.success) {
-        return response.user;
+        return response;
       }
-      throw new Error(response.message || 'Login failed');
+      throw new Error('Login failed');
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -40,9 +44,9 @@ export const register = createAsyncThunk(
     try {
       const response = await authService.register(userData);
       if (response.success) {
-        return response.user;
+        return response;
       }
-      throw new Error(response.message || 'Registration failed');
+      throw new Error('Registration failed');
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -108,6 +112,36 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
+export const submitKycDocuments = createAsyncThunk(
+  'auth/submitKyc',
+  async (kycData: any, { rejectWithValue }) => {
+    try {
+      const response = await authService.submitKyc(kycData);
+      if (response.success) {
+        return response.data;
+      }
+      throw new Error(response.message || 'KYC submission failed');
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const getKycStatus = createAsyncThunk(
+  'auth/getKycStatus',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authService.getKycStatus();
+      if (response.success) {
+        return response.data;
+      }
+      throw new Error(response.message || 'Failed to get KYC status');
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -132,7 +166,7 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
         state.isAuthenticated = true;
         state.error = null;
       })
@@ -150,7 +184,7 @@ const authSlice = createSlice({
       })
       .addCase(register.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
         state.isAuthenticated = true;
         state.error = null;
       })
@@ -213,6 +247,35 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(updateProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      
+      // KYC submission
+      .addCase(submitKycDocuments.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(submitKycDocuments.fulfilled, (state) => {
+        state.isLoading = false;
+        state.kycStatus = 'pending';
+        state.error = null;
+      })
+      .addCase(submitKycDocuments.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      
+      // Get KYC status
+      .addCase(getKycStatus.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getKycStatus.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.kycStatus = action.payload.status;
+        state.kycDocuments = action.payload.documents || [];
+      })
+      .addCase(getKycStatus.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

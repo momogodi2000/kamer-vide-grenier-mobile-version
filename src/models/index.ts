@@ -1,5 +1,5 @@
 // User types and interfaces
-export {
+export type {
   User,
   CreateUserRequest,
   LoginRequest,
@@ -19,10 +19,18 @@ export {
 } from './User';
 
 // Product types and interfaces
-export { Product, ProductStatus, ProductCondition } from './Product';
+export type { 
+  Product, 
+  ProductStatus, 
+  ProductCondition,
+  CreateProductRequest,
+  ProductSearchFilters,
+  ProductSearchResponse,
+  DeliveryOptions
+} from './Product';
 
 // Order types and interfaces  
-export { Order, OrderStatus, PaymentStatus, DeliveryMethod } from './Order';
+export type { Order, OrderStatus, PaymentStatus, DeliveryMethod } from './Order';
 
 export interface ApiResponse<T = any> {
   success: boolean;

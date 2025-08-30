@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Product, ProductSearchFilters, Category } from '../../models';
+import { Product, Category } from '../../models';
+import { ProductSearchFilters, CreateProductRequest } from '../../models/Product';
 import { productService } from '../../services';
 
 interface ProductState {
@@ -129,6 +130,53 @@ export const getMyProducts = createAsyncThunk(
         return response;
       }
       throw new Error('Failed to fetch my products');
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const createProduct = createAsyncThunk(
+  'products/create',
+  async (productData: CreateProductRequest, { rejectWithValue }) => {
+    try {
+      const response = await productService.createProduct(productData);
+      if (response.success && response.data) {
+        return response.data;
+      }
+      throw new Error('Failed to create product');
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updateProduct = createAsyncThunk(
+  'products/update',
+  async ({ productId, productData }: { productId: string; productData: Partial<CreateProductRequest> }, { rejectWithValue }) => {
+    try {
+      const response = await productService.updateProduct(productId, productData);
+      if (response.success && response.data) {
+        return response.data;
+      }
+      throw new Error('Failed to update product');
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const deleteProduct = createAsyncThunk(
+  'products/delete',
+  async (productId: string, { rejectWithValue }) => {
+    try {
+      // For now, we'll assume the API call exists
+      // const response = await productService.deleteProduct(productId);
+      // if (response.success) {
+      //   return productId;
+      // }
+      // throw new Error('Failed to delete product');
+      return productId; // Temporary implementation
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -278,6 +326,68 @@ const productSlice = createSlice({
       // Get my products
       .addCase(getMyProducts.fulfilled, (state, action) => {
         state.myProducts = action.payload.data;
+      })
+      
+      // Create product
+      .addCase(createProduct.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(createProduct.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.myProducts.unshift(action.payload); // Add to beginning of my products
+      })
+      .addCase(createProduct.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+
+      // Update product
+      .addCase(updateProduct.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateProduct.fulfilled, (state, action) => {
+        state.isLoading = false;
+        // Update the product in myProducts array
+        const index = state.myProducts.findIndex(p => p.id === action.payload.id);
+        if (index !== -1) {
+          state.myProducts[index] = action.payload;
+        }
+        // Also update in other arrays if present
+        const updateInArray = (array: Product[]) => {
+          const idx = array.findIndex(p => p.id === action.payload.id);
+          if (idx !== -1) {
+            array[idx] = action.payload;
+          }
+        };
+        updateInArray(state.products);
+        updateInArray(state.featuredProducts);
+        updateInArray(state.recentProducts);
+        updateInArray(state.searchResults);
+        updateInArray(state.wishlist);
+        if (state.selectedProduct?.id === action.payload.id) {
+          state.selectedProduct = action.payload;
+        }
+      })
+      .addCase(updateProduct.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+
+      // Delete product
+      .addCase(deleteProduct.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const productId = action.payload;
+        state.myProducts = state.myProducts.filter(product => product.id !== productId);
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
       })
       
       // Wishlist actions

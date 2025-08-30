@@ -23,12 +23,12 @@ export class AuthService {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
       const response = await apiClient.post<any>('/auth/login', {
-        identifier: credentials.email || credentials.phone,
+        identifier: credentials.email,
         password: credentials.password
       });
       
-      if (response.success && response.data?.tokens) {
-        const loginResponse = {
+      if (response.success && response.data?.tokens && response.data?.user) {
+        const loginResponse: LoginResponse = {
           success: true,
           token: response.data.tokens.accessToken,
           refresh_token: response.data.tokens.refreshToken,
@@ -49,15 +49,15 @@ export class AuthService {
     try {
       // Transform to match backend expectations
       const registerData = {
-        first_name: userData.firstName,
-        last_name: userData.lastName,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
         email: userData.email,
         phone: userData.phone,
         password: userData.password,
         city: userData.city,
         region: userData.region,
-        terms_accepted: userData.termsAccepted || true,
-        preferred_language: userData.preferredLanguage || 'fr'
+        terms_accepted: userData.terms_accepted,
+        preferred_language: userData.preferred_language || 'fr'
       };
       
       const response = await apiClient.post<any>('/auth/register', registerData);
@@ -210,6 +210,22 @@ export class AuthService {
   async resendVerificationEmail(): Promise<ApiResponse> {
     try {
       return await apiClient.post<ApiResponse>('/auth/resend-verification');
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async submitKyc(kycData: any): Promise<ApiResponse> {
+    try {
+      return await apiClient.post<ApiResponse>('/users/kyc/submit', kycData);
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async getKycStatus(): Promise<ApiResponse> {
+    try {
+      return await apiClient.get<ApiResponse>('/users/kyc/status');
     } catch (error) {
       throw this.handleError(error);
     }

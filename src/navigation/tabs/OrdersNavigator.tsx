@@ -3,14 +3,16 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { OrdersStackParamList } from '../types';
 
 // Placeholder components
-const OrdersListScreen = () => <></>;
-const OrderDetailsScreen = () => <></>;
 const CreateOrderScreen = () => <></>;
 const CheckoutFlowScreen = () => <></>;
 const PaymentMethodScreen = () => <></>;
-const OrderTrackingScreen = () => <></>;
 const SalesHistoryScreen = () => <></>;
 const OrderChatScreen = () => <></>;
+
+// Actual components
+import OrdersListScreen from '../../screens/orders/OrdersListScreen';
+import OrderDetailsScreen from '../../screens/orders/OrderDetailsScreen';
+import OrderTrackingScreen from '../../screens/orders/OrderTrackingScreen';
 
 const OrdersStack = createStackNavigator<OrdersStackParamList>();
 

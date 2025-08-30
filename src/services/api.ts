@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = __DEV__ ? 'http://localhost:5003/api' : 'https://api.kamervidegrinier.com/api';
+const API_BASE_URL = __DEV__ ? 'http://localhost:4000/api' : 'https://api.kamervidegrinier.com/api';
 
 export interface ApiConfig {
   baseURL: string;

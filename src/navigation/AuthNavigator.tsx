@@ -10,6 +10,7 @@ import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
 import ResetPasswordScreen from '../screens/auth/ResetPasswordScreen';
 import VerifyEmailScreen from '../screens/auth/VerifyEmailScreen';
 import VerifyPhoneScreen from '../screens/auth/VerifyPhoneScreen';
+import KYCDocumentScreen from '../screens/auth/KYCDocumentScreen';
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
 
@@ -49,7 +50,6 @@ const AuthNavigator: React.FC = () => {
         options={{
           headerShown: true,
           title: 'Connexion',
-          headerBackTitleVisible: false,
         }}
       />
       <AuthStack.Screen 
@@ -58,7 +58,6 @@ const AuthNavigator: React.FC = () => {
         options={{
           headerShown: true,
           title: 'Créer un compte',
-          headerBackTitleVisible: false,
         }}
       />
       <AuthStack.Screen 
@@ -67,7 +66,6 @@ const AuthNavigator: React.FC = () => {
         options={{
           headerShown: true,
           title: 'Mot de passe oublié',
-          headerBackTitleVisible: false,
         }}
       />
       <AuthStack.Screen 
@@ -76,7 +74,6 @@ const AuthNavigator: React.FC = () => {
         options={{
           headerShown: true,
           title: 'Réinitialiser le mot de passe',
-          headerBackTitleVisible: false,
         }}
       />
       <AuthStack.Screen 
@@ -85,7 +82,6 @@ const AuthNavigator: React.FC = () => {
         options={{
           headerShown: true,
           title: 'Vérifier l\'email',
-          headerBackTitleVisible: false,
         }}
       />
       <AuthStack.Screen 
@@ -94,7 +90,13 @@ const AuthNavigator: React.FC = () => {
         options={{
           headerShown: true,
           title: 'Vérifier le téléphone',
-          headerBackTitleVisible: false,
+        }}
+      />
+      <AuthStack.Screen 
+        name="KYC" 
+        component={KYCDocumentScreen}
+        options={{
+          headerShown: false,
         }}
       />
     </AuthStack.Navigator>
