@@ -58,3 +58,39 @@ afterEach(() => {
   // Reset any manual mocks
   jest.resetAllMocks();
 });
+
+// Global test utilities
+global.testUtils = {
+  mockUser: {
+    id: '1',
+    email: 'test@example.com',
+    first_name: 'John',
+    last_name: 'Doe',
+    role: 'client',
+    phone: '+237612345678',
+    avatar: null,
+    is_active: true,
+    email_verified: true,
+    phone_verified: true,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  },
+  mockFetchSuccess: (data) => {
+    global.fetch.mockImplementationOnce(() =>
+      Promise.resolve({
+        json: () => Promise.resolve(data),
+        ok: true,
+        status: 200,
+      })
+    );
+  },
+  mockFetchError: (status = 400, message = 'Error') => {
+    global.fetch.mockImplementationOnce(() =>
+      Promise.resolve({
+        json: () => Promise.resolve({ message }),
+        ok: false,
+        status,
+      })
+    );
+  },
+};

@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiClient } from './api';
-import { 
-  User, 
-  LoginRequest, 
-  LoginResponse, 
-  CreateUserRequest, 
-  UpdateProfileRequest, 
-  ApiResponse 
+import {
+  User,
+  LoginRequest,
+  LoginResponse,
+  CreateUserRequest,
+  UpdateProfileRequest,
+  ApiResponse,
 } from '../models';
 
 export class AuthService {
@@ -24,7 +24,7 @@ export class AuthService {
     try {
       const response = await apiClient.post<any>('/auth/login', {
         identifier: credentials.email,
-        password: credentials.password
+        password: credentials.password,
       });
       
       if (response.success && response.data?.tokens && response.data?.user) {
@@ -47,7 +47,6 @@ export class AuthService {
 
   async register(userData: CreateUserRequest): Promise<LoginResponse> {
     try {
-      // Transform to match backend expectations
       const registerData = {
         first_name: userData.first_name,
         last_name: userData.last_name,
@@ -57,7 +56,7 @@ export class AuthService {
         city: userData.city,
         region: userData.region,
         terms_accepted: userData.terms_accepted,
-        preferred_language: userData.preferred_language || 'fr'
+        preferred_language: userData.preferred_language || 'fr',
       };
       
       const response = await apiClient.post<any>('/auth/register', registerData);
@@ -67,7 +66,7 @@ export class AuthService {
           success: true,
           token: response.data.tokens.accessToken,
           refresh_token: response.data.tokens.refreshToken,
-          user: response.data.user
+          user: response.data.user,
         };
         await this.storeAuthData(loginResponse);
         this.currentUser = response.data.user;
@@ -107,7 +106,7 @@ export class AuthService {
           success: true,
           token: response.data.tokens.accessToken,
           refresh_token: response.data.tokens.refreshToken,
-          user: this.currentUser
+          user: this.currentUser!
         };
         await this.storeAuthData(loginResponse);
         return true;

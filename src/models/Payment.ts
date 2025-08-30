@@ -1,4 +1,4 @@
-export type PaymentProvider = 'noupia' | 'campay' | 'stripe' | 'cash_on_delivery';
+export type PaymentProvider = 'noupia' | 'campay' | 'stripe' | 'cash_on_delivery' | 'mtn' | 'orange' | 'bank_transfer';
 
 export interface Payment {
   id: string;
@@ -17,14 +17,14 @@ export interface Payment {
   external_reference?: string;
   description?: string;
   metadata?: Record<string, any>;
-  paid_at?: Date;
-  failed_at?: Date;
-  cancelled_at?: Date;
-  refunded_at?: Date;
+  paid_at?: string;
+  failed_at?: string;
+  cancelled_at?: string;
+  refunded_at?: string;
   refund_amount?: number;
   refund_reason?: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CreatePaymentRequest {
@@ -47,5 +47,5 @@ export interface PaymentWebhookData {
   currency: string;
   status: 'success' | 'failed' | 'cancelled';
   payment_data: Record<string, any>;
-  received_at: Date;
+  received_at: string;
 }

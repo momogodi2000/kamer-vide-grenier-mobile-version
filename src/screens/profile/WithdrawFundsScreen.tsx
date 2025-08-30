@@ -96,8 +96,8 @@ const WithdrawFundsScreen: React.FC = () => {
       const withdrawalData: CreateWithdrawalRequest = {
         amount: withdrawalAmount,
         method: selectedMethod === 'bank_transfer' ? 'bank_transfer' : 'mobile_money',
-        provider: selectedMethod === 'mtn_mobile_money' ? 'MTN' :
-                 selectedMethod === 'orange_money' ? 'Orange' : 'Bank',
+        provider: selectedMethod === 'mtn_mobile_money' ? 'mtn' :
+                 selectedMethod === 'orange_money' ? 'orange' : 'bank_transfer',
         account_number: accountNumber,
         account_name: accountName,
         description: 'Retrait de fonds demandé via mobile',

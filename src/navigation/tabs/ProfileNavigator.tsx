@@ -33,7 +33,9 @@ const ProfileNavigator: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
 
   const getRoleDashboard = () => {
-    if (!user) return DashboardScreen;
+    if (!user) {
+      return DashboardScreen;
+    }
     
     switch (user.role) {
       case 'admin':
@@ -53,14 +55,14 @@ const ProfileNavigator: React.FC = () => {
 
   return (
     <ProfileStack.Navigator>
-      <ProfileStack.Screen 
-        name="Dashboard" 
+      <ProfileStack.Screen
+        name="Profile"
         component={DashboardComponent}
         options={{
           title: user?.role === 'admin' ? 'Admin Dashboard' :
                  user?.role === 'client' ? 'Mon Dashboard' :
                  user?.role === 'delivery' ? 'Livreur Dashboard' :
-                 'Dashboard'
+                 'Dashboard',
         }}
       />
       <ProfileStack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Mon Profil' }} />

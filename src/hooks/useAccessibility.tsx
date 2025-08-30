@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import {
   AccessibilityInfo,
   AccessibilityChangeEventName,
-  AccessibilityChangeEvent,
   Platform,
   findNodeHandle,
 } from 'react-native';
@@ -82,12 +81,8 @@ export const useFocusManager = () => {
   };
 
   const moveFocusToNext = () => {
-    if (Platform.OS === 'android') {
-      AccessibilityInfo.sendAccessibilityEvent(
-        findNodeHandle(null),
-        'typeViewFocused'
-      );
-    }
+    // This functionality is not available on all platforms
+    // Consider using a different approach for focus management
   };
 
   return {
@@ -147,6 +142,8 @@ export const useAccessibleAnnouncements = () => {
 
 // Hook for form accessibility
 export const useFormAccessibility = (fieldId: string) => {
+  const { announceForAccessibility } = useScreenReader();
+
   const getFieldAccessibility = (
     label: string,
     error?: string,
@@ -155,7 +152,7 @@ export const useFormAccessibility = (fieldId: string) => {
   ) => {
     const accessibilityLabel = required ? `${label}, required` : label;
     const accessibilityHint = error || helperText;
-    
+
     return {
       accessibilityLabel,
       accessibilityHint,
@@ -166,8 +163,6 @@ export const useFormAccessibility = (fieldId: string) => {
   };
 
   const announceValidationChange = (error?: string, success?: string) => {
-    const { announceForAccessibility } = useScreenReader();
-    
     if (error) {
       announceForAccessibility(`Error: ${error}`);
     } else if (success) {
@@ -201,8 +196,8 @@ export const useLoadingAccessibility = () => {
 
   const getLoadingAccessibility = (loading: boolean, label?: string) => ({
     accessibilityState: { busy: loading },
-    accessibilityLabel: loading 
-      ? `Loading${label ? `: ${label}` : ''}` 
+    accessibilityLabel: loading
+      ? `Loading${label ? `: ${label}` : ''}`
       : label,
   });
 
@@ -237,10 +232,10 @@ export const useNavigationAccessibility = () => {
   ) => ({
     accessibilityRole: 'tab' as const,
     accessibilityLabel: label,
-    accessibilityState: { 
+    accessibilityState: {
       selected: current,
     },
-    accessibilityHint: current 
+    accessibilityHint: current
       ? 'Currently selected'
       : 'Double tap to select',
     ...(index !== undefined && total !== undefined && {
@@ -292,14 +287,13 @@ export const useListAccessibility = () => {
 export const useModalAccessibility = () => {
   const { setAccessibilityFocus } = useFocusManager();
   const { announceForAccessibility } = useScreenReader();
-  const previousFocus = useRef<any>(null);
 
   const openModal = (modalRef: any, title?: string) => {
     // Announce modal opening
     if (title) {
       announceForAccessibility(`${title} dialog opened`);
     }
-    
+
     // Focus the modal after a short delay
     setTimeout(() => {
       if (modalRef?.current) {
@@ -358,7 +352,8 @@ export const useGestureAccessibility = () => {
 
 // Hook for color and contrast
 export const useAccessibleColors = () => {
-  const { prefersHighContrast } = useHighContrast();
+  // For now, return default values since we don't have a high contrast hook
+  const prefersHighContrast = false;
   
   const getAccessibleColor = (
     normalColor: string,
@@ -381,5 +376,28 @@ export const useAccessibleColors = () => {
     prefersHighContrast,
     getAccessibleColor,
     getAccessibleColorPair,
+  };
+};
+
+// Main accessibility context hook
+export const useAccessibilityContext = () => {
+  const screenReader = useScreenReader();
+  const reducedMotion = useReducedMotion();
+  const focus = useFocusManager();
+  const announcements = useAccessibleAnnouncements();
+  const colors = useAccessibleColors();
+
+  return {
+    isScreenReaderEnabled: screenReader.isScreenReaderEnabled,
+    announceForAccessibility: screenReader.announceForAccessibility,
+    prefersReducedMotion: reducedMotion,
+    setAccessibilityFocus: focus.setAccessibilityFocus,
+    moveFocusToNext: focus.moveFocusToNext,
+    queueAnnouncement: announcements.queueAnnouncement,
+    clearQueue: announcements.clearQueue,
+    announceImmediate: announcements.announceImmediate,
+    prefersHighContrast: colors.prefersHighContrast,
+    getAccessibleColor: colors.getAccessibleColor,
+    getAccessibleColorPair: colors.getAccessibleColorPair,
   };
 };
